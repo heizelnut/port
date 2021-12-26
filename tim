@@ -1,0 +1,84 @@
+#!/bin/sh
+
+. ./.env
+
+ENTRYSRC=${ENTRYSRC:-"$(find $SOURCEPATH | grep 'Main\.java')"}
+ENTRYCLS=${ENTRYCLS:-"$(find $CLASSPATH | grep 'Main\.class')"}
+ENTRYCLS=${ENTRYCLS##\./}
+ENTRYCLS=${ENTRYCLS%%.class}
+
+MANIFEST=${MANIFEST:-manifest.txt}
+
+VERBOSE=${VERBOSE:-yes}
+
+ilog() {
+	printf " -> %s\n" "$1"
+}
+
+dlog() {
+	printf "(+) %s\n" "$1"
+}
+
+wlog() {
+	printf "(!) %s\n" "$1"
+}
+
+elog() {
+	printf "(x) %s\n" "$1"
+}
+
+info() {
+	[ "$VERBOSE" = 'yes' ] && {
+		ilog "Project path: $PROJECTPATH"
+		ilog "Package name: $PKGNAME"
+		ilog "Source path: $SOURCEPATH"
+		ilog "Class path: $CLASSPATH"
+		ilog "Entry file: $ENTRYSRC"
+		ilog "Entry class: $ENTRYCLS"
+	}
+}
+
+usage() {
+	echo "USAGE:"
+	echo "  $0 build    Generate .class files"
+	echo "  $0 run      Run from the entry point"
+	echo "  $0 clean    Remove .class files from work tree"
+	echo "  $0 bundle   Generate a .jar file to deploy"
+	echo "  $0 info     Show relevant environment variables"
+}
+
+run() {
+	java "${ENTRYCLS##$CLASSPATH/}"
+}
+
+clean() {
+	rm -r $CLASSPATH/*
+}
+
+bundle() {
+	jar cfm "$PKGNAME.jar" "$MANIFEST" -C "$CLASSPATH" "$PKGNAME" && \
+		ilog "Output file: $PKGNAME.jar" && dlog "Done." || \
+		elog "Run a build before a bundle."
+}
+
+build() {
+	wlog "Building project..."
+
+	files="$(find $SOURCEPATH | grep '\.java$')"
+	
+	for f in $files
+	do
+		ilog "$f"
+	done
+
+	javac -d "$CLASSPATH" $files && \
+		dlog "All went good." || elog "There was an error."
+}
+
+[ "$1" = "run" ] && run && exit
+[ "$1" = "build" ] && build && exit
+[ "$1" = "clean" ] && clean && exit
+[ "$1" = "bundle" ] && bundle && exit
+[ "$1" = "info" ] && info && exit
+
+usage

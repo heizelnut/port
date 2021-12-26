@@ -1,0 +1,20 @@
+TABELLA DEI REQUISITI
+
+n.  Tipo    Priorità    Requisito
+------------------------------------------------------------------------------
+1   F       MUST        L'utente aggiunge una nuova barca con nome, 
+                        nazionalità, stazza, lunghezza e tipologia
+2   F       MUST        L'utente controlla la barca presente ad una
+                        particolare posizione
+3   F       SHOULD      L'utente vede tutte le barche che rientrano in un
+                        intervallo di lunghezza
+4   F       MUST        L'utente libera un posto dal porto
+5   F       MUST        Il sistema calcola l'importo totale alla liberazione
+                        del posto in funzione dei giorni di residenza
+6   F       SHOULD      Il sistema impedisce l'inserimento di barche con
+                        lunghezza > 10m nei primi 20 posti
+7   F       SHOULD      Il sistema inserisce le barche a vela nei posti
+                        successivi al 50
+8   F       MUST        Il sistema calcola il prezzo in funzione della
+                        lunghezza per le barche a vela e in funzione della
+                        stazza per le barche a motore
