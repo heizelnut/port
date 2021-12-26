@@ -30,13 +30,13 @@ public class PortMenu extends Menu {
 		System.out.print("Stazza [q]: ");
 		float volume = S.nextFloat();
 		
-		String sailOrBoat;
+		String sailOrMoon;
 		do {
 			System.out.print("Barca a vela o a motore? [v/m] ");
-			sailOrBoat = S.next();
-			System.out.print(sailOrBoat);
-		} while (!("m".equals(sailOrBoat) || "v".equals(sailOrBoat)));
-		boolean isSailing = "v".equals(sailOrBoat);
+			sailOrMoon = S.next();
+			System.out.print(sailOrMoon);
+		} while (!("m".equals(sailOrMoon) || "v".equals(sailOrMoon)));
+		boolean isSailing = "v".equals(sailOrMoon);
 		
 		Boat boat = new Boat(name, nationality, date, length, 
 				volume, isSailing);
