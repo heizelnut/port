@@ -1,4 +1,20 @@
 port-management
 ===============
 
-wip
+design
+------
+port.core      business logic and data access
+port.cli       menu-driven command line interface
+port.Main      entry class (default behaviour -> start the cli)
+
+build and deploy
+----------------
+./tom build    # compile source tree to class files
+./tom bundle   # bundle class files in a jar package
+./tom          # show tool usage page
+
+dependencies
+------------
++ javac
++ java
+- jar
