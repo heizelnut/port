@@ -4,6 +4,13 @@
 
 ENTRYSRC=${ENTRYSRC:-"$(find $SOURCEPATH | grep 'Main\.java')"}
 ENTRYCLS=${ENTRYCLS:-"$(find $CLASSPATH | grep 'Main\.class')"}
+
+JARFILES="$(find $LIBPATH | grep '\.jar$')"
+for jar in $JARFILES
+do
+	INCLUDES="$INCLUDES:$jar"
+done
+
 ENTRYCLS=${ENTRYCLS##\./}
 ENTRYCLS=${ENTRYCLS%%.class}
 
@@ -33,8 +40,10 @@ info() {
 		ilog "Package name: $PKGNAME"
 		ilog "Source path: $SOURCEPATH"
 		ilog "Class path: $CLASSPATH"
+		ilog "Jar libs path: $LIBPATH"
 		ilog "Entry file: $ENTRYSRC"
 		ilog "Entry class: $ENTRYCLS"
+		ilog "Libraries: $JARFILES"
 	}
 }
 
@@ -48,7 +57,7 @@ usage() {
 }
 
 run() {
-	java "${ENTRYCLS##$CLASSPATH/}"
+	java -cp "$INCLUDES" "${ENTRYCLS##$CLASSPATH/}" $@
 }
 
 clean() {
@@ -61,8 +70,20 @@ bundle() {
 		elog "Run a build before a bundle."
 }
 
+manifest() {
+	printf "" > $MANIFEST
+	printf "Package-Name: %s\n" $PKGNAME >> $MANIFEST
+	printf "Main-Class: %s.Main\n" $PKGNAME >> $MANIFEST
+	printf "Class-path: " >> $MANIFEST
+	for lib in "$(printf $INCLUDES | sed 's/:/ /')"
+	do
+		printf "$LIBPATH/$(basename $lib)" >> $MANIFEST
+	done
+	printf "\n\n" >> $MANIFEST
+}
+
 build() {
-	wlog "Building project..."
+	manifest
 
 	files="$(find $SOURCEPATH | grep '\.java$')"
 	
@@ -71,12 +92,12 @@ build() {
 		ilog "$f"
 	done
 
-	javac -d "$CLASSPATH" $files && \
+	javac -cp "$INCLUDES" -d "$CLASSPATH" $@ $files && \
 		dlog "All went good." || elog "There was an error."
 }
 
-[ "$1" = "run" ] && run && exit
-[ "$1" = "build" ] && build && exit
+[ "$1" = "run" ] && shift 1 && run $@ && exit
+[ "$1" = "build" ] && shift 1 && build $@ && exit
 [ "$1" = "clean" ] && clean && exit
 [ "$1" = "bundle" ] && bundle && exit
 [ "$1" = "info" ] && info && exit

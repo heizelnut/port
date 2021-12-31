@@ -13,3 +13,4 @@
 # special folders
 classes/*
 dist/*
+lib/*
