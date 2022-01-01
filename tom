@@ -57,7 +57,9 @@ usage() {
 }
 
 run() {
-	java -cp "$INCLUDES" "${ENTRYCLS##$CLASSPATH/}" $@
+	cd "$CLASSPATH"
+	java -cp "$INCLUDES" "$PKGNAME.Main" $@
+	cd ..
 }
 
 clean() {
@@ -65,7 +67,7 @@ clean() {
 }
 
 bundle() {
-	jar cfm "$PKGNAME.jar" "$MANIFEST" -C "$CLASSPATH" "$PKGNAME" && \
+	jar cfm "$PKGNAME.jar" "$MANIFEST" -C "$CLASSPATH" "$PKGNAME" $@ && \
 		ilog "Output file: $PKGNAME.jar" && dlog "Done." || \
 		elog "Run a build before a bundle."
 }
@@ -99,7 +101,7 @@ build() {
 [ "$1" = "run" ] && shift 1 && run $@ && exit
 [ "$1" = "build" ] && shift 1 && build $@ && exit
 [ "$1" = "clean" ] && clean && exit
-[ "$1" = "bundle" ] && bundle && exit
+[ "$1" = "bundle" ] && shift 1 && bundle $@ && exit
 [ "$1" = "info" ] && info && exit
 
 usage
