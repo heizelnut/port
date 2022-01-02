@@ -4,15 +4,19 @@ import java.io.*;
 import java.net.*;
 import com.sun.net.httpserver.*;
 
+import port.core.Port;
+
 public class PortServer {
 	HttpServer server;
-	int port;
+	Port port;
+	int portNumber;
 
-	public PortServer(int port) throws IOException {
-		this.port = port;
-		this.server = HttpServer.create(new InetSocketAddress(this.port), 0);
+	public PortServer(int portNumber) throws IOException {
+		this.port = new Port();
+		this.portNumber = portNumber;
+		this.server = HttpServer.create(new InetSocketAddress(portNumber), 0);
 		this.server.createContext("/", new RootRouter("/"));
-		// this.server.createContext("/boats", new BoatsRouter("/boats"));
+		this.server.createContext("/boats", new BoatsRouter("/boats", port));
 		this.server.setExecutor(null);
 	}
 

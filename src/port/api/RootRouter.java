@@ -5,11 +5,11 @@ import org.json.JSONObject;
 
 import port.api.std.*;
 
-class RootRoute implements Route {
-	public int resolve(JSONObject j, HttpExchange t) {
+class RootRoute extends Route {
+	@Override
+	public int resolve() {
 		Headers h = t.getRequestHeaders();
-		j.put("msg", "root service");
-		j.put("client", h.getFirst("User-Agent"));
+		j.put("ok", true);
 		return 200;
 	}
 }
@@ -17,10 +17,6 @@ class RootRoute implements Route {
 public class RootRouter extends Router {
 	public RootRouter(String prefix) {
 		super(prefix);
-	}
-
-	@Override
-	public void setup() {
 		this.on("^$", new RootRoute());
 	}
 }
