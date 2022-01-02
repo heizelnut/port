@@ -11,8 +11,8 @@ public class PortServer {
 	public PortServer(int port) throws IOException {
 		this.port = port;
 		this.server = HttpServer.create(new InetSocketAddress(this.port), 0);
-		this.server.createContext("/", new RootHandler());
-		this.server.createContext("/boats", new BoatsHandler());
+		this.server.createContext("/", new RootRouter("/"));
+		// this.server.createContext("/boats", new BoatsRouter("/boats"));
 		this.server.setExecutor(null);
 	}
 
