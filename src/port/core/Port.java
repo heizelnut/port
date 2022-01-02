@@ -59,7 +59,11 @@ public class Port {
 
 		return this.boats[place-1];
 	}
-	
+
+	public Boat[] getBoats() {
+		return this.boats;
+	}
+
 	private boolean checkBoatLength(Boat boat, float min, float max) {
 		if (boat == null) return false;
 		return (boat.length >= min && boat.length < max);
