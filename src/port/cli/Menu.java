@@ -52,6 +52,7 @@ public class Menu {
 		
 		if (choice == options.size() + 1) {
 			exited = true;
+			this.end();
 			return;
 		}
 
@@ -66,5 +67,9 @@ public class Menu {
 		} catch (InvocationTargetException e) { }
 		  catch (NoSuchMethodException e) { }
 		  catch (IllegalAccessException e) { }
+	}
+	
+	protected void end() {
+		return;
 	}
 }
