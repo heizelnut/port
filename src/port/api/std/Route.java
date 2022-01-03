@@ -71,7 +71,7 @@ public class Route {
 
 		// don't parse an empty query string
 		if (query == null || "".equals(query))
-			return "";
+			return null;
 
 		HashMap<String,String> table = parseQueryString(query);
 		return table.get(key);
