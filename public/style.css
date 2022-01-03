@@ -1,0 +1,8 @@
+* {
+	font-family: Helvetica, sans-serif;
+	font-size: 1.1rem
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
