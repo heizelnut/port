@@ -58,7 +58,7 @@ public class Router implements HttpHandler {
 			os.write(response.getBytes());
 			os.close();
 		} catch (IOException e) {
-			System.out.println("IOException on request");
+			System.out.println("No content sent");
 		}
 	}
 }

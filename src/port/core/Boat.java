@@ -1,8 +1,9 @@
 package port.core;
 
 import java.util.Date;
+import java.io.Serializable;
 
-public class Boat {
+public class Boat implements Serializable {
 	public String name;
 	public String nationality;
 	public int place;

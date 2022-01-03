@@ -1,17 +1,80 @@
 package port.core;
 
 import java.util.*;
+import java.io.*;
 
 public class Port {
 	private Boat boats[] = new Boat[100];
+	private String filename;
 
 	public Port () {
 		for (int i = 0; i < this.boats.length; i++)
 			this.boats[i] = null;
+
+		filename = System.getenv("BOATSPATH");
+		filename = (filename == null) ? "/tmp/boats.dat" : filename;
+		this.loadFromDisk();
+
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				saveToDisk();
+			}
+		});
 	}
-	
+
 	public int size() {
 		return this.boats.length;
+	}
+
+	public void saveToDisk() {
+		ObjectOutputStream oos;
+		try {
+			oos = new ObjectOutputStream(new FileOutputStream(filename));
+		} catch (FileNotFoundException e) {
+			System.out.println("could not save to file");
+			return;	
+		} catch (IOException e) {
+			System.out.println("could not open stream");
+			return;
+		}
+
+		ArrayList<Boat> saved = new ArrayList<Boat>();
+		for (Boat b : this.boats) {
+			if (b == null) continue;
+			saved.add(b);
+		}
+		try {
+			oos.writeObject(saved);
+			oos.flush();
+			oos.close();
+		} catch (IOException e) {
+			System.out.println("could not write to file stream");
+		}
+	}
+
+	public void loadFromDisk() {
+		ObjectInputStream ois;
+		try {
+			ois = new ObjectInputStream(new FileInputStream(filename));
+		} catch (FileNotFoundException e) {
+			System.out.println("could not save to file");
+			return;	
+		} catch (IOException e) {
+			System.out.println("could not open stream");
+			return;
+		}
+		
+		try {
+			ArrayList<Boat> saved = (ArrayList<Boat>) ois.readObject();
+			for (Boat b : saved) {
+				this.boats[b.place-1] = b;
+			}
+			ois.close();
+		} catch (IOException e) {
+			System.out.println("could not read from stream");
+		} catch (ClassNotFoundException e) {
+			System.out.println("class not found");
+		}
 	}
 
 	private boolean isLargeBoat(Boat boat) {
@@ -39,17 +102,17 @@ public class Port {
 			boat.place = free + 1;
 			this.boats[free] = boat;
 		}
-
+		
 		return boat.place;
 	}
 
 	public float removeBoat(int place) {
 		Boat removed = this.getBoat(place);
 		if (removed == null)
-			return 0.0f;
+			return -1.0f;
 
 		this.boats[place-1] = null;
-
+		
 		return removed.getPriceUntilNow();
 	}
 

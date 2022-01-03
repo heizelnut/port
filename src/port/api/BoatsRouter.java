@@ -11,6 +11,7 @@ import port.core.*;
 
 class BoatsShowAll extends Route {
 	Port port;
+	DateFormat fmt = DateFormat.getInstance();
 
 	public BoatsShowAll(Port port) {
 		this.port = port;
@@ -27,9 +28,7 @@ class BoatsShowAll extends Route {
 
 			entry = new JSONObject();
 			entry.put("name", b.name);
-			entry.put("nationality", b.nationality);
 			entry.put("place", b.place);
-			entry.put("since", DateFormat.getInstance().format(b.getDockingDate()));
 			entry.put("type", b.isSailing ? "sail" : "motor");
 			result.put(entry);
 		}
@@ -39,9 +38,27 @@ class BoatsShowAll extends Route {
 	}
 	
 	public int createBoat() {
+		InputStream is = t.getRequestBody();
+		String body;
+		try {
+			body = new String(is.readAllBytes());
+		} catch (IOException e) {
+			j.put("ok", false);
+			j.put("description", "no body given");
+			return 400;
+		}
+
+		JSONObject request;
+		try {
+			request = new JSONObject(body);
+		} catch (JSONException e) {
+			j.put("ok", false);
+			j.put("description", "body is not json");
+			return 400;
+		}
+		
 		j.put("ok", true);
-		port.addBoat(new Boat("kek", "italia", new Date(System.currentTimeMillis()), 5, 10, true));
-		port.addBoat(new Boat("lol", "spagna", new Date(System.currentTimeMillis()), 5, 10, false));
+		j.put("result", request);
 		return 201;
 	}
 	
@@ -67,22 +84,69 @@ class BoatsShowAll extends Route {
 
 class BoatsShowOne extends Route {
 	Port port;
-	
+	DateFormat fmt = DateFormat.getInstance();
+
 	public BoatsShowOne(Port port) {
 		this.port = port;
 	}
 	
-	@Override
-	public int resolve() {
-		if (t.getRequestMethod() == "GET") {
+	private int getBoat() {
+		int place = Integer.parseInt(p.substring(1));
+		Boat boat = port.getBoat(place);
+		
+		if (boat == null) {
 			j.put("ok", false);
-			j.put("description", "invalid method on resource");
-			return 400;
+			j.put("description", "boat not found");
+			return 404;
+		}
+
+		JSONObject result = new JSONObject();
+		result.put("name", boat.name);
+		result.put("nationality", boat.nationality);
+		result.put("place", boat.place);
+		result.put("since", fmt.format(boat.getDockingDate()));
+		result.put("price", boat.getPriceUntilNow());
+		result.put("length", boat.length);
+		result.put("volume", boat.volume);
+		result.put("type", boat.isSailing ? "sail" : "motor");
+
+		j.put("ok", true);
+		j.put("result", result);
+		return 200;
+	}
+	
+	private int deleteBoat() {
+		int place = Integer.parseInt(p.substring(1));
+		float price = port.removeBoat(place);
+
+		if (price == -1.0f) {
+			j.put("ok", false);
+			j.put("description", "boat not found");
+			return 404;
 		}
 
 		j.put("ok", true);
-		j.put("path", p);
+		j.put("result", (new JSONObject()).put("price", price));
 		return 200;
+	}
+
+	@Override
+	public int resolve() {
+		int code;
+		switch (t.getRequestMethod()) {
+		case "GET":
+			code = getBoat();
+			break;
+		case "DELETE":
+			code = deleteBoat();
+			break;
+		default:
+			j.put("ok", false);
+			j.put("description", "invalid method on resource");
+			code = 400;
+			break;
+		}
+		return code;
 	}
 }
 
