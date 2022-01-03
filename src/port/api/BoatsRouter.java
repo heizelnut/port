@@ -21,11 +21,10 @@ class BoatsShowAll extends Route {
 		JSONArray result = new JSONArray();
 		j.put("ok", true);
 		JSONObject entry;
-		
 		String minParam = q("min");
 		String maxParam = q("max");
-		float min = (minParam != null) ? Float.parseFloat(minParam) : 0;
-		float max = (maxParam != null) ? Float.parseFloat(maxParam) : 999999;
+		float min = (minParam != null) ? Float.parseFloat(minParam) : 0.0f;
+		float max = (maxParam != null) ? Float.parseFloat(maxParam) : 999999.0f;
 
 		for (Boat boat : port.getBoatsByLength(min, max)) {
 			if (boat == null)
@@ -48,6 +47,7 @@ class BoatsShowAll extends Route {
 		String body;
 		try {
 			body = new String(is.readAllBytes());
+			is.close();
 		} catch (IOException e) {
 			j.put("ok", false);
 			j.put("description", "no body given");
@@ -63,8 +63,60 @@ class BoatsShowAll extends Route {
 			return 400;
 		}
 		
+		Boolean isSailing = false;
+		Boolean valid = true;
+
+		long dockingDate = 0;
+		String name = "";
+		String nationality = "";
+		float length = 0;
+		float volume = 0;
+		String type = "";
+
+		try {
+			name = request.getString("name");
+			nationality = request.getString("nationality");
+			length = request.getFloat("length");
+			volume = request.getFloat("volume");
+			type = request.getString("type");
+		} catch (JSONException e) {
+			valid = false;
+		}
+
+		if ("sail".equals(type))
+			isSailing = true;
+		else if ("motor".equals(type))
+			isSailing = false;
+		else
+			valid = false;
+
+
+		if (!valid) {
+			j.put("ok", false);
+			j.put("description", "invalid fields");
+			return 400;
+		}
+
+		try {
+			dockingDate = request.getInt("date") * 1000;
+		} catch (JSONException e) {
+			dockingDate = System.currentTimeMillis();
+		}
+
+		Date docking = new Date(dockingDate);
+		Boat boat = new Boat(name, nationality, docking,
+				length, volume, isSailing);
+
+		int place = port.addBoat(boat);
+
+		if (place == 0) {
+			j.put("ok", false);
+			j.put("description", "no place available");
+			return 409;
+		}
+
 		j.put("ok", true);
-		j.put("result", request);
+		j.put("result", (new JSONObject()).put("place", place));
 		return 201;
 	}
 	
@@ -81,7 +133,7 @@ class BoatsShowAll extends Route {
 		default:
 			j.put("ok", false);
 			j.put("description", "invalid method on resource");
-			code = 400;
+			code = 405;
 			break;
 		}
 		return code;
@@ -99,7 +151,7 @@ class BoatsShowOne extends Route {
 	private int getBoat() {
 		int place = Integer.parseInt(p.substring(1));
 		Boat boat = port.getBoat(place);
-		
+
 		if (boat == null) {
 			j.put("ok", false);
 			j.put("description", "boat not found");
@@ -149,7 +201,7 @@ class BoatsShowOne extends Route {
 		default:
 			j.put("ok", false);
 			j.put("description", "invalid method on resource");
-			code = 400;
+			code = 405;
 			break;
 		}
 		return code;
