@@ -33,7 +33,7 @@ class Main {
 			PortServer ps = new PortServer(port);
 			ps.start();
 		} catch (IOException e) {
-			System.out.println("IOException");
+			System.out.println("cannot bind port " + port);
 		}
 	}
 }

@@ -31,8 +31,10 @@ public class Router implements HttpHandler {
 
 		if (!found) {
 			JSONObject error = new JSONObject();
+			error.put("ok", false);
 			error.put("description", "resource not found");
 			String response = error.toString();
+			t.getResponseHeaders().add("Content-Type", "application/json");
 			t.sendResponseHeaders(404, response.length());
 			OutputStream os = t.getResponseBody();
 			os.write(response.getBytes());
@@ -51,6 +53,9 @@ public class Router implements HttpHandler {
 		path = path.substring(this.prefixLength);
 		route.setRequest(path, reply, t);
 		int code = route.resolve();
+		Headers h = t.getResponseHeaders();
+		h.add("Content-type", "application/json");
+		h.add("Connection", "keep-alive");
 		String response = reply.toString();
 		try {
 			t.sendResponseHeaders(code, response.length());

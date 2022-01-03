@@ -34,6 +34,7 @@ class BoatsShowAll extends Route {
 		}
 
 		j.put("result", result);
+		j.put("query", q("ciao"));
 		return 200;
 	}
 	
