@@ -8,7 +8,6 @@ import port.api.std.*;
 class RootRoute extends Route {
 	@Override
 	public int resolve() {
-		Headers h = t.getRequestHeaders();
 		j.put("ok", true);
 		return 200;
 	}
