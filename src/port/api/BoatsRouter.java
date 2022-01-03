@@ -21,20 +21,25 @@ class BoatsShowAll extends Route {
 		JSONArray result = new JSONArray();
 		j.put("ok", true);
 		JSONObject entry;
+		
+		String minParam = q("min");
+		String maxParam = q("max");
+		float min = (minParam != null) ? Float.parseFloat(minParam) : 0;
+		float max = (maxParam != null) ? Float.parseFloat(maxParam) : 999999;
 
-		for (Boat b : port.getBoats()) {
-			if (b == null)
+		for (Boat boat : port.getBoatsByLength(min, max)) {
+			if (boat == null)
 				continue;
 
 			entry = new JSONObject();
-			entry.put("name", b.name);
-			entry.put("place", b.place);
-			entry.put("type", b.isSailing ? "sail" : "motor");
+			entry.put("name", boat.name);
+			entry.put("place", boat.place);
+			entry.put("length", boat.length);
+			entry.put("type", boat.isSailing ? "sail" : "motor");
 			result.put(entry);
 		}
 
 		j.put("result", result);
-		j.put("query", q("ciao"));
 		return 200;
 	}
 	
