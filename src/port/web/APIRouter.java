@@ -1,4 +1,4 @@
-package port.api;
+package port.web;
 
 import java.io.*;
 import java.util.*;
@@ -6,7 +6,7 @@ import java.text.DateFormat;
 import com.sun.net.httpserver.*;
 import org.json.*;
 
-import port.api.std.*;
+import port.web.http.*;
 import port.core.*;
 
 class BoatsShowAll extends Route {
@@ -208,8 +208,8 @@ class BoatsShowOne extends Route {
 	}
 }
 
-class BoatsRouter extends Router {
-	public BoatsRouter(String prefix, Port port) {
+class APIRouter extends Router {
+	public APIRouter(String prefix, Port port) {
 		super(prefix);
 		this.on("^(|/)$", new BoatsShowAll(port));
 		this.on("^/\\d+$", new BoatsShowOne(port));

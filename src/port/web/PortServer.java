@@ -1,11 +1,11 @@
-package port.api;
+package port.web;
 
 import java.io.*;
 import java.net.*;
-// import java.lang.*;
 import com.sun.net.httpserver.*;
 
 import port.core.Port;
+import port.web.http.StaticRouter;
 
 public class PortServer {
 	HttpServer server;
@@ -14,11 +14,10 @@ public class PortServer {
 
 	public PortServer(int portNumber) throws IOException {
 		this.port = new Port();
-		port.loadFromDisk();
 		this.portNumber = portNumber;
 		this.server = HttpServer.create(new InetSocketAddress(portNumber), 0);
-		this.server.createContext("/", new RootRouter("/"));
-		this.server.createContext("/boats", new BoatsRouter("/boats", port));
+		this.server.createContext("/", new StaticRouter("/", "/srv/http/port"));
+		this.server.createContext("/api", new APIRouter("/api", port));
 		this.server.setExecutor(null);
 	}
 
