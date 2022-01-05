@@ -5,7 +5,7 @@ import java.net.*;
 import com.sun.net.httpserver.*;
 
 import port.core.Port;
-import port.web.http.StaticRouter;
+import port.web.http.StaticLiveRouter;
 
 public class PortServer {
 	HttpServer server;
@@ -16,7 +16,7 @@ public class PortServer {
 		this.port = new Port();
 		this.portNumber = portNumber;
 		this.server = HttpServer.create(new InetSocketAddress(portNumber), 0);
-		this.server.createContext("/", new StaticRouter("/", "/srv/http/port"));
+		this.server.createContext("/", new StaticLiveRouter("/", "/srv/http/port"));
 		this.server.createContext("/api", new APIRouter("/api", port));
 		this.server.setExecutor(null);
 	}

@@ -34,7 +34,7 @@ public class Port {
 			System.out.println("could not save to file");
 			return;	
 		} catch (IOException e) {
-			System.out.println("could not open stream");
+			System.out.println("could not open output stream");
 			return;
 		}
 
@@ -57,10 +57,10 @@ public class Port {
 		try {
 			ois = new ObjectInputStream(new FileInputStream(filename));
 		} catch (FileNotFoundException e) {
-			System.out.println("could not save to file");
+			System.out.println("could not load from file");
 			return;	
 		} catch (IOException e) {
-			System.out.println("could not open stream");
+			System.out.println("could not open input stream");
 			return;
 		}
 		
