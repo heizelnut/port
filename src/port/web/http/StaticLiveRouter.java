@@ -6,23 +6,12 @@ import java.nio.file.Files;
 import java.net.*;
 import com.sun.net.httpserver.*;
 
-class InMemoryFile {
-	String mime;
-	byte[] content;
-
-	public InMemoryFile(String mime, byte[] content) {
-		this.mime = mime;
-		this.content = content;
-	}
-}
-
-public class StaticRouter implements HttpHandler {
+public class StaticLiveRouter implements HttpHandler {
 	private int prefixLength;
 	private String rootDirectory;
 	private Map<String,String> mimes = new HashMap<String,String>();
-	private Map<String,InMemoryFile> cache = new HashMap<String,InMemoryFile>();
 
-	public StaticRouter(String prefix, String root) {
+	public StaticLiveRouter(String prefix, String root) {
 		this.prefixLength = prefix.length();
 		this.rootDirectory = root;
 		declareMimes();
@@ -77,29 +66,26 @@ public class StaticRouter implements HttpHandler {
 	public void handle(HttpExchange t) throws IOException {
 		String localPath = getPath(t);
 		String absolutePath = combine(rootDirectory, localPath);
-		InMemoryFile reply = cache.get(absolutePath);
+		InMemoryFile reply;
 		int code = 200;
 
-		if (reply == null) {
-			try {
-				File file = new File(absolutePath);
-				if (!file.exists() || !file.isFile())
-					throw new FileNotFoundException();
+		try {
+			File file = new File(absolutePath);
+			if (!file.exists() || !file.isFile())
+				throw new FileNotFoundException();
 
-				String mime = getMimeType(file.getName());
+			String mime = getMimeType(file.getName());
 
-				FileInputStream fileStream = new FileInputStream(file);
-				byte rawFile[] = fileStream.readAllBytes();
-				fileStream.close();
+			FileInputStream fileStream = new FileInputStream(file);
+			byte rawFile[] = fileStream.readAllBytes();
+			fileStream.close();
 
-				reply = new InMemoryFile(mime, rawFile);
-				code = 200;
-				cache.put(absolutePath, reply);
-			} catch (FileNotFoundException e) {
-				byte[] message = "404 Not Found".getBytes();
-				reply = new InMemoryFile("text/plain", message);
-				code = 404;
-			}
+			reply = new InMemoryFile(mime, rawFile);
+			code = 200;
+		} catch (FileNotFoundException e) {
+			byte[] message = "404 Not Found".getBytes();
+			reply = new InMemoryFile("text/plain", message);
+			code = 404;
 		}
 
 		sendFile(t, reply, code);
