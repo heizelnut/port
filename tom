@@ -77,9 +77,9 @@ manifest() {
 	printf "Package-Name: %s\n" $PKGNAME >> $MANIFEST
 	printf "Main-Class: %s.Main\n" $PKGNAME >> $MANIFEST
 	printf "Class-path: " >> $MANIFEST
-	for lib in "$(printf $INCLUDES | sed 's/:/ /')"
+	for inc in "$(printf $INCLUDES | sed 's/:/ /')"
 	do
-		printf "$LIBPATH/$(basename $lib)" >> $MANIFEST
+		printf "$LIBPATH/$(basename $inc) " >> $MANIFEST
 	done
 	printf "\n\n" >> $MANIFEST
 }
