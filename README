@@ -5,16 +5,24 @@ design
 ------
 port.core      business logic and data access
 port.cli       menu-driven command line interface
+port.web       HTTP JSON REST interface
 port.Main      entry class (default behaviour -> start the cli)
+
+environment
+-----------
+PORTPATH=/tmp/boats.dat   # edit savefile location
+PORT=8000                 # edit API listening port
 
 build and deploy
 ----------------
-./tom build    # compile source tree to class files
-./tom bundle   # bundle class files in a jar package
-./tom          # show tool usage page
+make build                # compile source tree to class files
+make jar                  # bundle class files in a jar package
+make run serve            # start the JSON API
+./tom                     # show tool usage page
 
 dependencies
 ------------
-+ javac
-+ java
-- jar
++ Java JDK 17
++ Java JRE 17
++ libs
+ + json-20211205.jar
