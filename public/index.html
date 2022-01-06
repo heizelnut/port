@@ -1,13 +1,47 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Port</title>
+		<title>ports n stuff</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
-		<h1>yeah this is working</h1>
+		<header>
+			<h3>port management</h3>
+		</header>
+		<main>
+			<template id="brief-boat">
+				<article>
+					<div class="card-grid">
+						<label class="icon">#</label>
+						<div class="description">
+							<div>
+								<label class=>name:</label>
+								<label class="data">%name%</label>
+							</div>
+							<div>
+								<label>place:</label>
+								<label class="data">%place%</label>
+							</div>
+						</div>
+					</div>
+				</article>
+			</template>
+			<div id="nothing">
+				<h3>Nothing to see yet...</h3>
+				<h5>You should maybe add a boat to get started</h5>
+			</div>
+		</main>
+		<aside>
+			<a class="button" href="#add-boat">add a boat</a>
+			<a class="button" href="#search-boat">search by length</a>
+		</aside>
+		<footer>
+			<label>made with 💜 by heizelnut</label>
+		</footer>
+		<script src="port-api.js"></script>
+		<script src="port-ui.js"></script>
 	</body>
 </html>
 

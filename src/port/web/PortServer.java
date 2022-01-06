@@ -16,7 +16,7 @@ public class PortServer {
 		this.port = new Port();
 		this.portNumber = portNumber;
 		this.server = HttpServer.create(new InetSocketAddress(portNumber), 0);
-		this.server.createContext("/", new StaticLiveRouter("/", "/srv/http/port"));
+		this.server.createContext("/", new StaticLiveRouter("/", "./public"));
 		this.server.createContext("/api", new APIRouter("/api", port));
 		this.server.setExecutor(null);
 	}
